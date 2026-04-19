@@ -336,6 +336,11 @@ a {
   border-radius: 22px;
 }
 
+.mockup-item img {
+  height: 64px;
+  object-fit: cover;
+}
+
 .profile-header > img {
   height: 130px;
   object-fit: cover;
