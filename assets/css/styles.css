@@ -341,6 +341,23 @@ a {
   object-fit: cover;
 }
 
+.highlight-preview {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 22px;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.highlight-preview:hover,
+.highlight-preview:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+  outline: none;
+}
+
 .profile-header > img {
   height: 130px;
   object-fit: cover;
