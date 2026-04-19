@@ -1,175 +1,213 @@
-(function () {
-  const data = window.campusCircleData;
-  const page = document.body.dataset.page;
-
-  function renderStars(rating) {
-    const rounded = Math.round(Number(rating));
-    return `${"★".repeat(rounded)}${"☆".repeat(5 - rounded)}`;
-  }
-
-  function profileCard(profile) {
-    const hobbyTags = profile.hobbies.map((hobby) => `<span class="tag">${hobby}</span>`).join("");
-    const galleryItems = profile.gallery.map((item) => `
-      <button class="gallery-item" type="button" data-work-src="${item.src}" data-work-title="${item.title}" data-work-owner="${profile.name}">
-        <img src="${item.src}" alt="${item.title} by ${profile.name}">
-        <span class="gallery-overlay">
-          <strong>${item.title}</strong>
-          <small>Click to view</small>
-        </span>
-      </button>
-    `).join("");
-    return `
-      <article class="profile-card">
-        <div class="profile-header">
-          <img src="${profile.image}" alt="${profile.name} profile photo">
-          <div>
-            <div class="profile-name-row">
-              <div>
-                <h3>${profile.name}</h3>
-                <p>${profile.title}</p>
-              </div>
-              <span class="price-badge">${profile.price}</span>
-            </div>
-            <div class="review-row">
-              <span class="review-chip">${renderStars(profile.rating)} ${profile.rating}</span>
-              <span class="review-chip">${profile.reviews} reviews</span>
-            </div>
-          </div>
-        </div>
-        <div class="profile-meta">
-          <p>${profile.bio}</p>
-          <div class="tag-row">${hobbyTags}</div>
-          <div class="meta-row">
-            <div class="meta-card">
-              <strong>${profile.works}</strong>
-              <span>submitted works</span>
-            </div>
-            <div class="meta-card">
-              <strong>${profile.rating}/5</strong>
-              <span>student rating</span>
-            </div>
-          </div>
-          <div class="work-gallery-block">
-            <div class="gallery-head">
-              <strong>Work gallery</strong>
-              <span>3 featured samples</span>
-            </div>
-            <div class="work-gallery">
-              ${galleryItems}
-            </div>
-          </div>
-          <div class="sample-work sample-review">
-            <div>
-              <strong>Past work highlight</strong>
-              <p>${profile.review}</p>
-            </div>
-          </div>
-          <div class="student-note">${profile.note}</div>
-        </div>
-      </article>
-    `;
-  }
-
-  function mentorCard(mentor) {
-    return `
-      <article class="mentor-card">
-        <img class="mentor-avatar" src="${mentor.image}" alt="${mentor.name} mentor photo">
-        <div>
-          <h3>${mentor.name}</h3>
-          <p><strong>${mentor.subject}</strong> • ${mentor.mode}</p>
-          <p>${mentor.description}</p>
-          <div class="tag-row">
-            <span class="tag">${mentor.price}</span>
-            <span class="tag">${mentor.freeOption}</span>
-            <span class="tag">${renderStars(mentor.rating)} ${mentor.rating}</span>
-          </div>
-        </div>
-        <div class="mentor-actions">
-          <span class="status-pill">${mentor.price}</span>
-          <a class="button button-primary" href="#">Book session</a>
-        </div>
-      </article>
-    `;
-  }
-
-  function marketplaceCard(item) {
-    return `
-      <article class="market-card">
-        <img src="${item.image}" alt="${item.name}">
-        <h3>${item.name}</h3>
-        <p>${item.description}</p>
-        <div class="market-meta">
-          <span class="tag">${item.price}</span>
-          <span class="tag">${item.alternate}</span>
-          <span class="tag">${item.size}</span>
-        </div>
-        <p>${item.seller}</p>
-        <a class="button button-secondary" href="#">View details</a>
-      </article>
-    `;
-  }
-
-  if (page === "home") {
-    document.getElementById("featuredProfiles").innerHTML = data.featuredProfiles.map(profileCard).join("");
-  }
-
-  if (page === "profiles") {
-    const allProfiles = [...data.featuredProfiles, ...data.extraProfiles];
-    document.getElementById("allProfiles").innerHTML = allProfiles.map(profileCard).join("");
-  }
-
-  if (page === "mentors") {
-    document.getElementById("mentorCards").innerHTML = data.mentors.map(mentorCard).join("");
-  }
-
-  if (page === "marketplace") {
-    document.getElementById("marketplaceCards").innerHTML = data.marketplace.map(marketplaceCard).join("");
-  }
-
-  const lightbox = document.createElement("div");
-  lightbox.className = "work-lightbox";
-  lightbox.innerHTML = `
-    <button class="lightbox-backdrop" type="button" aria-label="Close image preview"></button>
-    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="Work preview">
-      <button class="lightbox-close" type="button" aria-label="Close preview">×</button>
-      <img class="lightbox-image" src="" alt="">
-      <div class="lightbox-copy">
-        <strong class="lightbox-title"></strong>
-        <span class="lightbox-owner"></span>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(lightbox);
-
-  const lightboxImage = lightbox.querySelector(".lightbox-image");
-  const lightboxTitle = lightbox.querySelector(".lightbox-title");
-  const lightboxOwner = lightbox.querySelector(".lightbox-owner");
-
-  function closeLightbox() {
-    lightbox.classList.remove("is-open");
-    document.body.classList.remove("lightbox-open");
-  }
-
-  document.addEventListener("click", (event) => {
-    const trigger = event.target.closest(".gallery-item");
-    if (trigger) {
-      lightboxImage.src = trigger.dataset.workSrc;
-      lightboxImage.alt = trigger.dataset.workTitle;
-      lightboxTitle.textContent = trigger.dataset.workTitle;
-      lightboxOwner.textContent = trigger.dataset.workOwner;
-      lightbox.classList.add("is-open");
-      document.body.classList.add("lightbox-open");
-      return;
+window.campusCircleData = {
+  featuredProfiles: [
+    {
+      id: "gauri",
+      name: "Gauri Gandre",
+      title: "Paint & Drawing Artist",
+      image: "assets/images/profiles/gauriprofilepicture.jpeg",
+      price: "Phone cover art from Rs 249",
+      email: "gauri.gandre@kalaakart.in",
+      location: "Arts corner, main campus",
+      responseTime: "Usually replies in 2 hours",
+      priceRange: { min: 249, max: 899, defaultValue: 449, step: 50 },
+      rating: "4.9",
+      reviews: 36,
+      works: 42,
+      bio: "Gauri creates hand-painted phone covers, colorful paintings, and expressive sketches. Her work feels personal, detailed, and perfect for custom gifts or room decor.",
+      hobbies: ["Painting", "Sketching", "Custom phone covers", "Portrait art"],
+      gallery: [
+        { title: "Hand-Painted Floral Phone Cover", src: "assets/images/real-works/gauri_work1.jpeg" },
+        { title: "Krishna Inspired Painting", src: "assets/images/real-works/gauri_work2.jpeg" },
+        { title: "Realistic Pencil Portrait", src: "assets/images/real-works/gauri_work3.jpeg" }
+      ],
+      review: "\"Her painting work looks clean, thoughtful, and genuinely handmade with care.\"",
+      note: "Popular for custom painted accessories, devotional art, and detailed portrait sketches."
+    },
+    {
+      id: "aditi",
+      name: "Aditi",
+      title: "Knitting & Handmade Wool Crafts",
+      image: "assets/images/avatars/aditi.svg",
+      price: "Handmade gifts from Rs 199",
+      email: "aditi.crafts@kalaakart.in",
+      location: "Hostel craft club",
+      responseTime: "Usually replies by evening",
+      priceRange: { min: 199, max: 799, defaultValue: 349, step: 50 },
+      rating: "4.8",
+      reviews: 27,
+      works: 34,
+      bio: "Aditi makes adorable crochet and wool creations that feel perfect for gifting. Her small handmade pieces are cute, memorable, and very student-friendly in pricing.",
+      hobbies: ["Knitting", "Crochet", "Handmade gifts", "Wool accessories"],
+      gallery: [
+        { title: "Crochet Penguin Charm", src: "assets/images/real-works/aditi_work1.jpeg" },
+        { title: "Mini Crochet Rose Bouquet", src: "assets/images/real-works/aditi_work2.jpeg" },
+        { title: "Handmade Crochet Bow", src: "assets/images/real-works/aditi_work3.jpeg" }
+      ],
+      review: "\"The crochet pieces looked super neat and made such a cute personalized gift.\"",
+      note: "Best suited for handmade charms, crochet flowers, bows, and small custom gift pieces."
+    },
+    {
+      id: "pratiksha",
+      name: "Pratiksha",
+      title: "Resin Artist & Keychain Maker",
+      image: "assets/images/avatars/rutuja.svg",
+      price: "Custom resin art from Rs 199",
+      email: "pratiksha.resin@kalaakart.in",
+      location: "Design studio table",
+      responseTime: "Usually replies in 3 hours",
+      priceRange: { min: 199, max: 999, defaultValue: 399, step: 50 },
+      rating: "4.9",
+      reviews: 31,
+      works: 39,
+      bio: "Pratiksha creates customized resin keychains with preserved flowers, shimmer details, and alphabet designs. Her products feel premium, aesthetic, and perfect for gifting.",
+      hobbies: ["Resin art", "Keychains", "Pressed flowers", "Custom initials"],
+      gallery: [
+        { title: "Golden Resin Initial Keychain", src: "assets/images/real-works/pratiksha_work1.jpeg" },
+        { title: "Pressed Rose Crystal Letters", src: "assets/images/real-works/pratiksha_work2.jpeg" },
+        { title: "Floral Resin Alphabet Charm", src: "assets/images/real-works/pratiksha_work3.jpeg" }
+      ],
+      review: "\"The resin finish looked beautiful and the custom initials felt really premium.\"",
+      note: "Strong choice for personalized keychains, resin keepsakes, and customized letter gifts."
+    },
+    {
+      id: "sanika",
+      name: "Sanika",
+      title: "Mandala & Pen Art Illustrator",
+      image: "assets/images/avatars/neha.svg",
+      price: "Pen art from Rs 179",
+      email: "sanika.illustrates@kalaakart.in",
+      location: "Library drawing zone",
+      responseTime: "Usually replies in 1 day",
+      priceRange: { min: 179, max: 1199, defaultValue: 499, step: 50 },
+      rating: "4.8",
+      reviews: 22,
+      works: 33,
+      bio: "Sanika creates fine-line black ink artwork, devotional designs, and decorative illustrations with strong pattern detail. Her pieces are ideal for wall art, gifts, and custom decor.",
+      hobbies: ["Mandala art", "Pen drawing", "Devotional art", "Pattern design"],
+      gallery: [
+        { title: "Pattern Letter Artwork", src: "assets/images/real-works/sanika_work1.jpeg" },
+        { title: "Detailed Mandala Krishna Art", src: "assets/images/real-works/sanika_work2.jpeg" },
+        { title: "Decorative Flute Illustration", src: "assets/images/real-works/sanika_work3.jpeg" }
+      ],
+      review: "\"Her line work is very precise and the final drawing looks elegant and professional.\"",
+      note: "Ideal for mandala drawings, pen art commissions, devotional designs, and decorative custom sketches."
+    },
+    {
+      id: "vishv",
+      name: "Vishv Chavan",
+      title: "Poetry & Shayari Writer",
+      image: "assets/images/profiles/vishvprofilepicture.jpeg",
+      price: "Custom shayari from Rs 149",
+      email: "vishv.words@kalaakart.in",
+      location: "Literature club desk",
+      responseTime: "Usually replies in 4 hours",
+      priceRange: { min: 149, max: 699, defaultValue: 299, step: 50 },
+      rating: "4.7",
+      reviews: 24,
+      works: 43,
+      bio: "Vishv writes personal poems and shayari for birthdays, farewells, crush notes, and special occasions. His writing style is emotional, simple, and memorable.",
+      hobbies: ["Poetry", "Shayari", "Letter writing", "Open mic"],
+      gallery: [
+        { title: "Personalized Shayari Note", src: "assets/images/works/vishv-work.svg" },
+        { title: "Farewell Poem Card", src: "assets/images/works/vishv-work-2.svg" },
+        { title: "Romantic Shayari Letter", src: "assets/images/works/vishv-work-3.svg" }
+      ],
+      review: "\"He wrote a farewell shayari for my friend and everyone loved it.\"",
+      note: "Strong choice for personalized lines, event scripts, dedication notes, and emotional message writing."
+    },
+    {
+      id: "samyak",
+      name: "Samyak Misal",
+      title: "Video Editor & Portrait Photographer",
+      image: "assets/images/profiles/samyakprofilepicture.jpeg",
+      price: "Premium edits from Rs 699",
+      email: "samyak.media@kalaakart.in",
+      location: "Media lab, second floor",
+      responseTime: "Usually replies in 1 hour",
+      priceRange: { min: 699, max: 2499, defaultValue: 1199, step: 100 },
+      rating: "5.0",
+      reviews: 41,
+      works: 72,
+      bio: "Samyak edits polished personalized videos with sharp transitions, music sync, and clean storytelling. He also clicks standout portrait photos for profiles, events, and memories.",
+      hobbies: ["Video editing", "Photography", "Portrait shoots", "Reels"],
+      gallery: [
+        { title: "Street Moment Video Frame", src: "assets/images/real-works/samyak_work_1.jpeg" },
+        { title: "Personal Edit Still", src: "assets/images/real-works/samyak_work_2.jpeg" },
+        { title: "Cinematic Portrait Capture", src: "assets/images/real-works/samyak_work3.jpeg" }
+      ],
+      review: "\"The birthday edit looked professional and he delivered faster than expected.\"",
+      note: "Ideal for birthday edits, college event recap videos, cinematic portraits, and social media packages."
     }
-
-    if (event.target.closest(".lightbox-close") || event.target.classList.contains("lightbox-backdrop")) {
-      closeLightbox();
+  ],
+  extraProfiles: [],
+  mentors: [
+    {
+      name: "Riya Jadhav",
+      subject: "Engineering Physics",
+      mode: "Offline in library",
+      price: "Rs 199 per hour",
+      rating: "4.9",
+      freeOption: "Also takes one free doubt session weekly",
+      image: "assets/images/avatars/riya.svg",
+      description: "Second-year student who simplifies numerical problems and teaches only what matters for the university exam pattern."
+    },
+    {
+      name: "Prathamesh More",
+      subject: "Mathematics I & II",
+      mode: "Offline + hybrid",
+      price: "Rs 249 per session",
+      rating: "4.8",
+      freeOption: "Group revision session available",
+      image: "assets/images/avatars/prathamesh.svg",
+      description: "Known for step-by-step problem solving and compact formula revision sheets before internals and semester exams."
+    },
+    {
+      name: "Sneha Kale",
+      subject: "C Programming",
+      mode: "Lab support + offline",
+      price: "Free / pay what you feel",
+      rating: "4.7",
+      freeOption: "Free teaching option enabled",
+      image: "assets/images/avatars/sneha.svg",
+      description: "Helps juniors understand loops, arrays, practicals, and viva questions in a calm and beginner-friendly way."
     }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeLightbox();
+  ],
+  marketplace: [
+    {
+      name: "College Blazer",
+      image: "assets/images/works/blazer-item.svg",
+      description: "Well-kept formal blazer, worn only for two events. Good for presentations and placement drives.",
+      price: "Buy at Rs 700",
+      alternate: "Rent at Rs 149 per day",
+      seller: "Listed by Aarav, final year",
+      size: "Size M"
+    },
+    {
+      name: "Lab Coat",
+      image: "assets/images/works/labcoat-item.svg",
+      description: "Clean lab coat with good stitching, suitable for pharmacy or chemistry practicals.",
+      price: "Buy at Rs 300",
+      alternate: "Rent at Rs 99 per week",
+      seller: "Listed by Pooja, second year",
+      size: "Size L"
+    },
+    {
+      name: "White College Shirt",
+      image: "assets/images/works/shirt-item.svg",
+      description: "Plain white shirt in excellent condition, useful for uniform days and presentation events.",
+      price: "Buy at Rs 250",
+      alternate: "Rent at Rs 79 per day",
+      seller: "Listed by Karan, first year",
+      size: "Size M"
+    },
+    {
+      name: "Fest Kurta Set",
+      image: "assets/images/works/kurta-item.svg",
+      description: "Colorful ethnic wear set used once during cultural day. Looks fresh and photo-friendly.",
+      price: "Buy at Rs 450",
+      alternate: "Rent at Rs 129 per day",
+      seller: "Listed by Meenal, third year",
+      size: "Size S"
     }
-  });
-})();
+  ]
+};
